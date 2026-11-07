@@ -1,0 +1,779 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>时光列车：从盛世到乱世</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --paper: #F7F1E3;
+      --ink: #1F1C18;
+      --red: #9E2A2B;
+      --muted: #71695d;
+      --rule: #d7cbb4;
+      --card: #fffaf0;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background:
+        radial-gradient(ellipse at 14% 12%, rgba(158, 42, 43, .045), transparent 34rem),
+        var(--paper);
+      color: var(--ink);
+      font-family: "PingFang SC", "Kaiti SC", KaiTi, "STKaiti", serif;
+      font-size: 18px;
+    }
+
+    button { font: inherit; }
+
+    .page {
+      width: min(940px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 34px 0 48px;
+    }
+
+    .masthead {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 18px;
+      margin-bottom: 26px;
+    }
+
+    .eyebrow {
+      margin: 0 0 7px;
+      color: var(--red);
+      font-family: "PingFang SC", sans-serif;
+      font-size: 16px;
+      font-weight: 700;
+      letter-spacing: .16em;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(29px, 5vw, 42px);
+      letter-spacing: .06em;
+    }
+
+    .subtitle {
+      margin: 10px 0 0;
+      color: var(--muted);
+      font-size: 18px;
+      line-height: 1.7;
+    }
+
+    .soundless-tag {
+      flex: 0 0 auto;
+      padding: 7px 12px;
+      border: 1px solid var(--rule);
+      border-radius: 999px;
+      color: var(--muted);
+      font-family: "PingFang SC", sans-serif;
+      font-size: 16px;
+    }
+
+    .route {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      position: relative;
+      margin: 0 0 24px;
+      padding: 0;
+      list-style: none;
+    }
+
+    .route::before {
+      position: absolute;
+      top: 11px;
+      right: 10%;
+      left: 10%;
+      height: 2px;
+      background: var(--rule);
+      content: "";
+    }
+
+    .station {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      justify-items: center;
+      gap: 8px;
+      color: var(--muted);
+      font-family: "PingFang SC", sans-serif;
+      font-size: 16px;
+      text-align: center;
+    }
+
+    .station-dot {
+      width: 23px;
+      height: 23px;
+      border: 2px solid var(--rule);
+      border-radius: 50%;
+      background: var(--paper);
+    }
+
+    .station.active, .station.visited { color: var(--red); }
+    .station.active .station-dot, .station.visited .station-dot {
+      border-color: var(--red);
+      background: var(--red);
+      box-shadow: inset 0 0 0 5px var(--paper);
+    }
+
+    .ticket {
+      position: relative;
+      overflow: hidden;
+      border: 1px solid #cdbfa5;
+      border-radius: 6px;
+      background: var(--card);
+      box-shadow: 0 14px 36px rgba(49, 39, 23, .09);
+    }
+
+    .ticket::before, .ticket::after {
+      position: absolute;
+      top: 50%;
+      width: 24px;
+      height: 24px;
+      border: 1px solid #cdbfa5;
+      border-radius: 50%;
+      background: var(--paper);
+      content: "";
+      transform: translateY(-50%);
+    }
+
+    .ticket::before { left: -13px; }
+    .ticket::after { right: -13px; }
+
+    .ticket-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      padding: 18px 34px 15px;
+      border-bottom: 1px dashed var(--rule);
+    }
+
+    .ticket-label {
+      color: var(--red);
+      font-family: "PingFang SC", sans-serif;
+      font-size: 16px;
+      font-weight: 700;
+      letter-spacing: .13em;
+    }
+
+    .insight {
+      white-space: nowrap;
+      font-family: "PingFang SC", sans-serif;
+      font-size: 17px;
+    }
+
+    .insight strong { color: var(--red); font-size: 21px; }
+
+    .ticket-body { padding: 26px 34px 32px; }
+
+    .scene-meta {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: baseline;
+      gap: 8px 14px;
+      margin-bottom: 7px;
+    }
+
+    .year {
+      color: var(--red);
+      font-size: 27px;
+      font-weight: 700;
+      letter-spacing: .03em;
+    }
+
+    .place {
+      color: var(--muted);
+      font-family: "PingFang SC", sans-serif;
+      font-size: 18px;
+    }
+
+    h2 {
+      margin: 0 0 18px;
+      font-size: clamp(23px, 4vw, 29px);
+      letter-spacing: .04em;
+    }
+
+    .story {
+      min-height: 185px;
+      font-size: 19px;
+      line-height: 2;
+      white-space: pre-line;
+    }
+
+    .story p { margin: 0 0 12px; }
+    .story p:last-child { margin-bottom: 0; }
+
+    .skip-hint {
+      margin: 14px 0 0;
+      color: var(--muted);
+      font-family: "PingFang SC", sans-serif;
+      font-size: 16px;
+    }
+
+    .choices {
+      display: grid;
+      gap: 11px;
+      margin-top: 21px;
+    }
+
+    .choice {
+      width: 100%;
+      padding: 14px 17px;
+      border: 1px solid #cdbfa5;
+      border-radius: 4px;
+      background: transparent;
+      color: var(--ink);
+      line-height: 1.65;
+      text-align: left;
+      cursor: pointer;
+      transition: border-color .18s ease, background .18s ease, transform .18s ease;
+    }
+
+    .choice:hover, .choice:focus-visible {
+      border-color: var(--red);
+      background: #f7eee0;
+      outline: none;
+      transform: translateY(-1px);
+    }
+
+    .choice-index {
+      display: inline-block;
+      min-width: 32px;
+      color: var(--red);
+      font-family: "PingFang SC", sans-serif;
+      font-weight: 700;
+    }
+
+    .end-card {
+      padding: 21px;
+      border: 1px solid var(--rule);
+      background: #f8f0df;
+      line-height: 1.9;
+    }
+
+    .end-card h3 {
+      margin: 0 0 7px;
+      color: var(--red);
+      font-size: 24px;
+    }
+
+    .end-card p { margin: 0; }
+
+    .restart {
+      margin-top: 17px;
+      padding: 11px 20px;
+      border: 1px solid var(--red);
+      border-radius: 3px;
+      background: var(--red);
+      color: #fffaf0;
+      cursor: pointer;
+    }
+
+    .restart:hover, .restart:focus-visible {
+      background: #7f2022;
+      outline: 2px solid #d6a5a1;
+      outline-offset: 2px;
+    }
+
+    .footer-note {
+      margin: 19px 0 0;
+      color: var(--muted);
+      font-family: "PingFang SC", sans-serif;
+      font-size: 16px;
+      line-height: 1.8;
+    }
+
+    .scene-kicker {
+      margin: 0 0 10px;
+      color: var(--red);
+      font-family: "PingFang SC", sans-serif;
+      font-size: 16px;
+      font-weight: 700;
+      letter-spacing: .08em;
+    }
+
+    .feedback {
+      margin-top: 18px;
+      padding: 14px 17px;
+      border-left: 4px solid var(--red);
+      background: #f7eee0;
+      line-height: 1.8;
+    }
+
+    .feedback strong {
+      display: block;
+      margin-bottom: 4px;
+      color: var(--red);
+    }
+
+    .station.completed .station-dot {
+      background: var(--red);
+      box-shadow: inset 0 0 0 5px var(--paper);
+    }
+
+    .station.completed .station-name::after {
+      content: " ✓";
+      font-weight: 700;
+    }
+
+    .ending-chain {
+      margin-top: 15px !important;
+      padding-top: 12px;
+      border-top: 1px dashed var(--rule);
+      font-weight: 700;
+    }
+
+    @media (max-width: 620px) {
+      .page { width: min(100% - 22px, 940px); padding-top: 24px; }
+      .masthead { align-items: flex-start; }
+      .soundless-tag { display: none; }
+      .station { font-size: 14px; }
+      .ticket-top { padding: 15px 25px 13px; }
+      .ticket-body { padding: 22px 25px 26px; }
+      .story { min-height: 230px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <header class="masthead">
+      <div>
+        <p class="eyebrow">历史课堂 · 时光列车</p>
+        <h1>从盛世到乱世</h1>
+        <p class="subtitle">你是时空列车的临时乘务员。沿途收集线索，查明大唐由盛转衰的转折。</p>
+      </div>
+      <span class="soundless-tag">课前速览 · 约 2–3 分钟</span>
+    </header>
+
+    <ol class="route" id="route" aria-label="旅程进度"></ol>
+
+    <article class="ticket" aria-live="polite">
+      <div class="ticket-top">
+        <span class="ticket-label">时空列车　|　单程票：605 洛阳 → 960 汴梁</span>
+        <span class="insight">洞察章 <strong id="insight">0/5</strong></span>
+      </div>
+      <div class="ticket-body">
+        <p class="scene-kicker" id="scene-kicker"></p>
+        <div class="scene-meta">
+          <span class="year" id="year"></span>
+          <span class="place" id="place"></span>
+        </div>
+        <h2 id="chapter"></h2>
+        <div class="story" id="story" tabindex="0" role="button" aria-label="点击跳过打字效果"></div>
+        <p class="skip-hint" id="skip-hint">正文打字中 · 点击正文可直接显示全部</p>
+        <div class="feedback" id="feedback" hidden aria-live="polite"></div>
+        <div class="choices" id="choices"></div>
+      </div>
+    </article>
+    <p class="footer-note">每站读一条线索、回答一个快问；答错也能继续收集证据。最后，把线索连成一条历史解释。</p>
+  </main>
+
+  <script>
+    const SCENES = {
+      canal: {
+        year: "605",
+        place: "洛阳 · 东都",
+        station: "洛阳",
+        chapter: "第一站｜车窗两侧的证词",
+        text: [
+          "我刚上车，窗外的洛阳粮商敲敲车窗：“运河通了，南方的米很快就能运来。”另一侧，一位农民叹气：“我又被征去修河，家里的地没人种。”",
+          "同一条大运河，既沟通南北、便利运输，也伴随着沉重徭役。"
+        ],
+        question: "如果要给这张“运河照片”配说明，哪句更完整？",
+        choices: [
+          {
+            label: "运河促进南北交流，但过度征发民力也加重了百姓负担。",
+            insight: 1,
+            correct: true,
+            response: "线索入袋：一项工程的长远作用与当时的民生代价，可以同时成立。隋亡的教训也由此留给了后来者。",
+            next: "zhenguan"
+          },
+          {
+            label: "只要工程有用，修建时百姓付出多少并不重要。",
+            insight: 0,
+            correct: false,
+            response: "补看这条线索：运河有沟通南北之利，但过度征发民力、三征高丽等加重负担，也是隋朝速亡的重要原因。",
+            next: "zhenguan"
+          }
+        ]
+      },
+      zhenguan: {
+        year: "630",
+        place: "长安 · 太极宫",
+        station: "长安",
+        chapter: "第二站｜皇帝为什么怕翻船？",
+        text: [
+          "列车驶进长安。唐太宗李世民把百姓比作水、君主比作舟：“水能载舟，亦能覆舟。”",
+          "唐初君臣吸取隋亡教训，重视纳谏、用人和恢复生产，出现“贞观之治”。"
+        ],
+        question: "太宗把“水能覆舟”挂在心上，最可能是在提醒自己什么？",
+        choices: [
+          {
+            label: "隋朝因过度役使百姓而速亡，治国必须顾及民生。",
+            insight: 1,
+            correct: true,
+            response: "线索入袋：贞观之治不是孤立的盛世标签，它也回应了隋朝兴亡留下的问题。",
+            next: "kaiyuan"
+          },
+          {
+            label: "只要修好都城和运河，百姓自然会拥护朝廷。",
+            insight: 0,
+            correct: false,
+            response: "再想想洛阳那两位见证者：大型工程带来便利，也可能因过度征发损害民生。唐初正需要吸取这个教训。",
+            next: "kaiyuan"
+          }
+        ]
+      },
+      kaiyuan: {
+        year: "740",
+        place: "长安 · 开元年间",
+        station: "长安",
+        chapter: "第三站｜盛世列车，暗线也在前行",
+        text: [
+          "车窗传来杜甫《忆昔》的诗句：“忆昔开元全盛日……稻米流脂粟米白，公私仓廪俱丰实。”贞观之后，武则天时期承前启后，唐朝继续发展。",
+          "开元年间，唐朝达到鼎盛。可边疆防务越来越依赖节度使，地方军政力量也在增长。"
+        ],
+        question: "列车员提醒：盛世景象之外，哪条线索值得继续追踪？",
+        choices: [
+          {
+            label: "边镇由谁掌兵、掌财，中央还能不能约束他们？",
+            insight: 1,
+            correct: true,
+            response: "线索入袋：诗句让我们看见“盛”在哪里；节度使权力的变化，则提醒我们盛世并不等于没有隐忧。",
+            next: "rebellion"
+          },
+          {
+            label: "既然粮仓充实，说明唐朝的治理不会再出问题。",
+            insight: 0,
+            correct: false,
+            response: "诗句写出开元繁荣，却不能证明权力结构永远稳固。请带上“边镇力量增长”这条暗线，继续前行。",
+            next: "rebellion"
+          }
+        ]
+      },
+      rebellion: {
+        year: "755",
+        place: "范阳 · 边镇军营",
+        station: "范阳",
+        chapter: "第四站｜紧急停车：范阳起兵",
+        text: [
+          "警报响起：天宝十四载（755），安禄山从范阳起兵。杜甫在《春望》中写下：“国破山河在，城春草木深。”",
+          "从《忆昔》到《春望》，只隔十五年。安史之乱持续八年，至763年平定，成为唐朝由盛转衰的重要转折。",
+          "我翻开乘务员的三格记录单：制度、政治、经济。叛乱的爆发，是人物行动与更深层条件叠加的结果。"
+        ],
+        question: "安禄山凭什么能起兵？哪份记录单最能解释“这不是一场意外”？",
+        choices: [
+          {
+            label: "只记人物：安禄山野心太大，玄宗没有及时识破。",
+            insight: 0,
+            correct: false,
+            response: "人物选择是直接导火索，但还没解释他为何能掌握足以起兵的力量。乘务员提示：再查中央与边镇的权力、兵源和财政。",
+            next: "aftermath"
+          },
+          {
+            label: "三层叠加：节度使掌兵、财、行政，造成外重内轻（制度）；玄宗后期怠政、用人失当（政治）；均田制破坏、府兵制衰落后转向募兵（经济与军事基础）。",
+            insight: 1,
+            correct: true,
+            response: "关键线索入袋：制度使地方权力坐大，政治失察令中央难以约束，经济与兵制变化又让边军依赖将领。安禄山起兵是导火索，三层因素交织才解释了危机为何能爆发并扩大。",
+            next: "aftermath"
+          }
+        ]
+      },
+      aftermath: {
+        year: "907",
+        place: "洛阳 · 朱温受禅",
+        station: "洛阳",
+        chapter: "第五站｜这场危机留下了什么？",
+        text: [
+          "907年，唐朝灭亡。安史之乱没有让唐朝立刻灭亡，却削弱了中央权威；此后藩镇割据延续，最终走向唐末分裂。",
+          "北方先后出现五代，南方及其他地区并存十国。960年，北宋建立，分裂局面走向结束。列车即将抵达汴梁。"
+        ],
+        question: "五代十国与安史之乱之后的历史，哪条线索能把它们连起来？",
+        choices: [
+          {
+            label: "安史之乱后中央控制力衰弱，藩镇割据延续并推动唐末分裂。",
+            insight: 1,
+            correct: true,
+            response: "最后一枚线索章：五代十国并非突然出现，它与唐末藩镇割据、中央权威衰弱有延续关系。",
+            next: "ending"
+          },
+          {
+            label: "唐朝在907年灭亡，与安史之乱后的地方局势没有关系。",
+            insight: 0,
+            correct: false,
+            response: "补上最后一环：安史之乱是重要转折，之后藩镇割据延续，中央权威衰弱，唐朝最终在907年灭亡。",
+            next: "ending"
+          }
+        ]
+      }
+    };
+
+    const STATION_ORDER = ["canal", "zhenguan", "kaiyuan", "rebellion", "aftermath"];
+    const STATION_NAMES = ["605 洛阳", "630 长安", "740 长安", "755 范阳", "907 洛阳"];
+    const completedScenes = new Set();
+
+    const route = document.getElementById("route");
+    const sceneKicker = document.getElementById("scene-kicker");
+    const year = document.getElementById("year");
+    const place = document.getElementById("place");
+    const chapter = document.getElementById("chapter");
+    const story = document.getElementById("story");
+    const choices = document.getElementById("choices");
+    const insightDisplay = document.getElementById("insight");
+    const skipHint = document.getElementById("skip-hint");
+    const feedback = document.getElementById("feedback");
+
+    let currentScene = "start";
+    let insight = 0;
+    let typingTimer = null;
+    let fullText = [];
+    let paragraphIndex = 0;
+    let characterIndex = 0;
+    let typing = false;
+
+    function renderRoute() {
+      route.replaceChildren();
+      STATION_NAMES.forEach((name, index) => {
+        const item = document.createElement("li");
+        item.className = "station";
+        item.dataset.scene = STATION_ORDER[index];
+        item.setAttribute("aria-label", `第${index + 1}站：${name}`);
+        const dot = document.createElement("span");
+        dot.className = "station-dot";
+        dot.setAttribute("aria-hidden", "true");
+        const label = document.createElement("span");
+        label.className = "station-name";
+        label.textContent = name;
+        item.append(dot, label);
+        route.append(item);
+      });
+    }
+
+    function updateRoute() {
+      const activeIndex = STATION_ORDER.indexOf(currentScene);
+      [...route.children].forEach((item, index) => {
+        item.classList.toggle("active", index === activeIndex);
+        item.classList.toggle("completed", completedScenes.has(STATION_ORDER[index]));
+        if (index === activeIndex) item.setAttribute("aria-current", "step");
+        else item.removeAttribute("aria-current");
+      });
+    }
+
+    function stopTyping() {
+      if (typingTimer !== null) {
+        window.clearTimeout(typingTimer);
+        typingTimer = null;
+      }
+      typing = false;
+    }
+
+    function showAllText() {
+      stopTyping();
+      story.replaceChildren();
+      fullText.forEach((text) => {
+        const paragraph = document.createElement("p");
+        paragraph.textContent = text;
+        story.append(paragraph);
+      });
+      skipHint.hidden = true;
+      if (currentScene !== "start" && currentScene !== "ending") renderChoices();
+    }
+
+    function typeNextCharacter() {
+      if (paragraphIndex >= fullText.length) {
+        typing = false;
+        typingTimer = null;
+        skipHint.hidden = true;
+        renderChoices();
+        return;
+      }
+
+      let paragraph = story.lastElementChild;
+      if (!paragraph || paragraphIndex > 0 && characterIndex === 0) {
+        paragraph = document.createElement("p");
+        story.append(paragraph);
+      }
+
+      const text = fullText[paragraphIndex];
+      paragraph.textContent += text[characterIndex];
+      characterIndex += 1;
+
+      if (characterIndex >= text.length) {
+        paragraphIndex += 1;
+        characterIndex = 0;
+      }
+      story.scrollTop = story.scrollHeight;
+      typingTimer = window.setTimeout(typeNextCharacter, 28);
+    }
+
+    function renderChoices() {
+      choices.replaceChildren();
+      const scene = SCENES[currentScene];
+      if (!scene) return;
+
+      const prompt = document.createElement("p");
+      prompt.className = "scene-kicker";
+      prompt.textContent = `乘务员快问｜${scene.question}`;
+      choices.append(prompt);
+
+      scene.choices.forEach((choice, index) => {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = "choice";
+        const marker = document.createElement("span");
+        marker.className = "choice-index";
+        marker.textContent = `${String.fromCharCode(65 + index)}.`;
+        button.append(marker, document.createTextNode(choice.label));
+        button.addEventListener("click", () => {
+          completeChoice(choice);
+        });
+        choices.append(button);
+      });
+    }
+
+    function completeChoice(choice) {
+      insight += choice.insight;
+      completedScenes.add(currentScene);
+      insightDisplay.textContent = `${insight}/5`;
+      updateRoute();
+      feedback.replaceChildren();
+      const heading = document.createElement("strong");
+      heading.textContent = choice.correct ? "判断正确 · 线索入袋" : "收到新线索";
+      const explanation = document.createElement("span");
+      explanation.textContent = choice.response;
+      feedback.append(heading, explanation);
+      feedback.hidden = false;
+      choices.replaceChildren();
+
+      const next = document.createElement("button");
+      next.type = "button";
+      next.className = "restart";
+      const nextIndex = STATION_ORDER.indexOf(choice.next);
+      next.textContent = choice.next === "ending"
+        ? "盖上第五枚章 · 抵达终点"
+        : `盖上第${STATION_ORDER.indexOf(currentScene) + 1}枚章 · 前往${STATION_NAMES[nextIndex]}`;
+      next.addEventListener("click", () => {
+        currentScene = choice.next;
+        renderScene();
+      });
+      choices.append(next);
+    }
+
+    function renderStart() {
+      updateRoute();
+      sceneKicker.textContent = "检票开始｜请登上单程列车";
+      year.textContent = "605 → 960";
+      place.textContent = "洛阳 → 汴梁";
+      chapter.textContent = "乘务员，准备出发！";
+      story.replaceChildren();
+      const first = document.createElement("p");
+      first.textContent = "你收到一张只有单程的时光车票：605年洛阳出发，960年汴梁抵达。五站各找一条线索，看看一段盛世如何一步步走向转折。";
+      const second = document.createElement("p");
+      second.textContent = "列车不会返程；每站答一道快问，集齐五枚洞察章。准备好了吗？";
+      story.append(first, second);
+      skipHint.hidden = true;
+      feedback.hidden = true;
+      choices.replaceChildren();
+      const start = document.createElement("button");
+      start.type = "button";
+      start.className = "restart";
+      start.textContent = "检票上车 · 出发";
+      start.addEventListener("click", () => {
+        currentScene = STATION_ORDER[0];
+        renderScene();
+      });
+      choices.append(start);
+    }
+
+    function renderEnding() {
+      updateRoute();
+      sceneKicker.textContent = "列车到站｜五枚线索已集齐";
+      year.textContent = "960";
+      place.textContent = "汴梁 · 终点站";
+      chapter.textContent = "这趟列车，为什么停在这里？";
+      story.replaceChildren();
+      const card = document.createElement("div");
+      card.className = "end-card";
+      const title = document.createElement("h3");
+      title.textContent = "乘务员的总报告";
+      const text = document.createElement("p");
+      text.textContent = "隋朝以洛阳为中心开凿运河，沟通南北，却因过度征发民力而速亡；唐初吸取教训，出现贞观之治，经过武则天时期的承前启后，进入开元盛世。但边疆军政权力不断集中到节度使手中，中央后期政治失察，均田制破坏、府兵制衰落又改变了兵源基础。755年安史之乱爆发，成为唐朝由盛转衰的重要转折；战后中央权威削弱、藩镇割据延续，唐朝于907年灭亡，五代十国接踵而至，至960年北宋建立。";
+      const chain = document.createElement("p");
+      chain.className = "ending-chain";
+      chain.textContent = "总线索：盛世积累 → 权力外重内轻 → 安史之乱（转折）→ 藩镇割据 → 唐亡与五代十国";
+      const bridge = document.createElement("p");
+      bridge.textContent = `你的洞察章：${insight}/5。现在让我们倒回755年范阳：一个守边将领，凭什么能够起兵？接下来，我们就从制度、政治、经济三个层面，细看安史之乱为何不是偶然。`;
+      bridge.className = "ending-chain";
+      card.append(title, text, chain, bridge);
+      story.append(card);
+      skipHint.hidden = true;
+      feedback.hidden = true;
+      choices.replaceChildren();
+      const restart = document.createElement("button");
+      restart.type = "button";
+      restart.className = "restart";
+      restart.textContent = "再乘一次";
+      restart.addEventListener("click", () => {
+        insight = 0;
+        completedScenes.clear();
+        insightDisplay.textContent = "0/5";
+        currentScene = "start";
+        renderScene();
+      });
+      choices.append(restart);
+    }
+
+    function renderScene() {
+      if (currentScene === "start") {
+        renderStart();
+        return;
+      }
+      if (currentScene === "ending") {
+        renderEnding();
+        return;
+      }
+
+      updateRoute();
+      const scene = SCENES[currentScene];
+      sceneKicker.textContent = `乘务员观察任务｜第${STATION_ORDER.indexOf(currentScene) + 1}站 / 5`;
+      year.textContent = scene.year;
+      place.textContent = scene.place;
+      chapter.textContent = scene.chapter;
+      fullText = scene.text;
+      paragraphIndex = 0;
+      characterIndex = 0;
+      stopTyping();
+      story.replaceChildren();
+      choices.replaceChildren();
+      feedback.hidden = true;
+      skipHint.hidden = false;
+      typing = true;
+      typeNextCharacter();
+    }
+
+    story.addEventListener("click", () => {
+      if (typing) showAllText();
+    });
+    story.addEventListener("keydown", (event) => {
+      if (typing && (event.key === "Enter" || event.key === " ")) {
+        event.preventDefault();
+        showAllText();
+      }
+    });
+
+    renderRoute();
+    renderScene();
+  </script>
+</body>
+</html>
